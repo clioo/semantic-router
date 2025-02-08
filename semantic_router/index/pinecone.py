@@ -77,6 +77,7 @@ class PineconeIndex(BaseIndex):
         base_url: Optional[str] = "https://api.pinecone.io",
         sync: str = "local",
         init_async_index: bool = False,
+        client: "pinecone.Pinecone" = None,
     ):
         super().__init__()
         self.index_name = index_name
@@ -94,7 +95,10 @@ class PineconeIndex(BaseIndex):
         if self.api_key is None:
             raise ValueError("Pinecone API key is required.")
 
-        self.client = self._initialize_client(api_key=self.api_key)
+        if not client:
+            client = self._initialize_client(api_key=self.api_key)
+        self.client = client
+        
         if init_async_index:
             self.async_client = self._initialize_async_client(api_key=self.api_key)
         else:
